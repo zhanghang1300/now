@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        ul#drop {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        ul#drop li {
+            
+            margin: 0;
+            padding: 10px;
+        }
+ 
+        ul#drop li:hover {
+            background-color: darkgrey;
+			width:200px;
+        }
+ 
+        p#selectedId {
+            display: inline-block;
+        }
+ 
+    </style>
+ 
+    <script>		
+        var data = ["Saab","Volvo","BMW","Anna","Amanda"];  //不用异步
+		//var s =xmlhttp.responseText;
+		//var data =s.split(",");             异步加载时使用
+        window.onload = function (evg) {
+            var search = document.getElementById("search");
+            var searchText = document.getElementById("searchText");
+            var selectedId = document.getElementById("selectedId");
+ 
+            searchText.onfocus = function () {
+ 
+                var drop = document.getElementById("drop");
+ 
+                if (!drop) {
+                    var originalUl = document.createElement("ul");
+                    originalUl.id = "drop";
+                    data.forEach(function (element) {
+                        var li = document.createElement("li");
+                        li.innerHTML = element;
+                        li.onclick = function () {
+                            searchText.value = this.innerHTML;
+                        };
+                        originalUl.appendChild(li);
+                    });
+                    search.appendChild(originalUl);
+                }
+ 
+            };
+			//键盘监听
+            searchText.onkeyup = function () {
+                var drop = document.getElementById("drop");
+                search.removeChild(drop);
+                var ul = document.createElement("ul");
+                ul.id = "drop";
+                search.appendChild(ul);
+ 
+                data.forEach(function (element) {
+                    if (element.search(searchText.value) != -1) {
+						
+                        var li = document.createElement("li");
+                        li.innerHTML = element;
+						li.innerHTML = li.innerHTML.replace(searchText.value,"<span style='color: red;'>$&</span>")
+                        li.onclick = function () {
+                            searchText.value = this.innerHTML;
+                        };
+                        ul.appendChild(li);
+                    }
+                });
+            };
+ 
+            if (search.addEventListener) {
+                search.addEventListener("click", function (evg) {
+                    evg.stopPropagation();
+                })
+            } else if (search.attachEvent) {
+                search.attachEvent("click", function (evg) {
+                    evg.cancelBubble = true;
+                })
+            }
+ 
+
+ 
+            document.onclick = function () {
+                var drop = document.getElementById("drop");
+                search.removeChild(drop);
+            };
+        };
+		
+		//异步加载,使用时需要配置好环境
+		/*
+		function showOpt()
+		{
+		  var xmlhttp;
+		  if (window.XMLHttpRequest)
+		  {
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
+		  }
+		  else
+		  {
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  xmlhttp.onreadystatechange=function()
+		  {
+			if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+			  var str=xmlhttp.responseText;
+			}
+		  }
+		  xmlhttp.open("GET","/ajax_info.txt",true);
+		  xmlhttp.send();
+		}
+		*/
+    </script>
+</head>
+<body>
+<div id="search">
+    <form action="">
+
+        <input type="text" id="searchText" onkeyup="showHint(this.value)">
+		<span style='color: red;'></span>
+    </form>
+</div>
+</body>
+</html>
